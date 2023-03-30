@@ -1,8 +1,7 @@
-package cmd
+package http
 
 import (
 	"context"
-	_ "github.com/google/wire"
 	provider2 "github.com/simon/mengine/infrastructure/provider"
 )
 
@@ -14,16 +13,10 @@ func NewProvider() provider2.Provider {
 }
 
 func (p provider) Name() string {
-	return `cmd`
+	return `http.server`
 }
 
-//
-//func (p provider) Register() {
-//	wire.Build(NewEvent, NewGreeter, NewMessage)
-//}
-
 func (p provider) Register(ctx context.Context) error {
-	NewCmd()
 	return nil
 }
 

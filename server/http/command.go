@@ -1,0 +1,41 @@
+package http
+
+import (
+	"fmt"
+	cmd2 "github.com/simon/mengine/infrastructure/cmd"
+	"github.com/spf13/cobra"
+)
+
+type cmd struct {
+	cli *cobra.Command
+}
+
+func NewCmd() *cmd {
+	return &cmd{}
+}
+
+func (c *cmd) Init() error {
+	cli := &cobra.Command{
+		Use: `http`,
+	}
+	cli.Run = func(cmd *cobra.Command, args []string) {
+		fmt.Println("http start")
+	}
+
+	c.cli = cli
+
+	return nil
+}
+
+func (c *cmd) Cobra() *cobra.Command {
+	return c.cli
+}
+
+func (c cmd) Run() error {
+	return nil
+}
+
+func (c cmd) AddCommand(cmds ...cmd2.Command) error {
+	//TODO implement me
+	panic("implement me")
+}

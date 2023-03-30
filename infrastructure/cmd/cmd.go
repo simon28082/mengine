@@ -9,9 +9,11 @@ import (
 )
 
 type Command interface {
-	Run() error
+	Init() error
 
-	AddCommand(Command) error
+	AddCommand(cmds ...Command) error
+
+	Run() error
 }
 
 type Cmd struct {
@@ -24,8 +26,15 @@ func NewCmd() *Cmd {
 	}
 }
 
-func (c *Cmd) AddCommand() {
+func (c *Cmd) AddCommand(cmds ...Command) error {
+	for i := range cmds {
+		cmd := cmds[i]
+		if v, ok := cmd.(CobraCommand); ok {
+			c.cli.AddCommand(v.Cobra())
+		}
+	}
 
+	return nil
 }
 
 func mengineCommand() *cobra.Command {
@@ -57,10 +66,10 @@ func mengineCommand() *cobra.Command {
 	return cmd
 }
 
-func (c *Cmd) Run() error {
-	c.cli.SetArgs(os.Args[1:])
-	c.cli.AddCommand(&cobra.Command{
-		Use: `test`,
-	})
+func (c *Cmd) Run(args ...string) error {
+	if len(args) == 0 {
+		args = os.Args[1:]
+	}
+	c.cli.SetArgs(args)
 	return c.cli.Execute()
 }

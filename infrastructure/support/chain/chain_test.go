@@ -7,7 +7,7 @@ import (
 )
 
 func TestBuildChain(t *testing.T) {
-	mw1 := func(next ChainFunc) ChainFunc {
+	mw1 := func(next ChainParameterFunc) ChainParameterFunc {
 		return func(input any) (interface{}, error) {
 			input = fmt.Sprintf(`%s-mw1before`, input.(string))
 			result, err := next(input)
@@ -17,7 +17,7 @@ func TestBuildChain(t *testing.T) {
 		}
 	}
 
-	mw2 := func(next ChainFunc) ChainFunc {
+	mw2 := func(next ChainParameterFunc) ChainParameterFunc {
 		return func(input interface{}) (interface{}, error) {
 			input = fmt.Sprintf(`%s-mw2before`, input.(string))
 			result, err := next(input)
@@ -26,7 +26,7 @@ func TestBuildChain(t *testing.T) {
 		}
 	}
 
-	myMiddleware := func(next ChainFunc) ChainFunc {
+	myMiddleware := func(next ChainParameterFunc) ChainParameterFunc {
 		return func(input interface{}) (interface{}, error) {
 			input = fmt.Sprintf(`%s-MyMiddlewareBefore`, input.(string))
 			result, err := next(input)
@@ -35,7 +35,7 @@ func TestBuildChain(t *testing.T) {
 		}
 	}
 
-	result, err := BuildChain("hello", mw1, mw2, myMiddleware)
+	result, err := BuildChainParameter("hello", mw1, mw2, myMiddleware)
 	assert.Nil(t, err)
 	assert.Equal(t, result, `hello-mw1before-mw2before-MyMiddlewareBefore`)
 

@@ -2,17 +2,17 @@ package chain
 
 import "fmt"
 
-type ChainFunc func(input any) (any, error)
+type ChainParameterFunc func(input any) (any, error)
 
-type Chain func(ChainFunc) ChainFunc
+type ChainParameter func(next ChainParameterFunc) ChainParameterFunc
 
-func BuildChain(input any, mw ...Chain) (any, error) {
+func BuildChainParameter(input any, mw ...ChainParameter) (any, error) {
 	if len(mw) == 0 {
 		return nil, fmt.Errorf("middleware chain is empty")
 	}
 
 	var (
-		current ChainFunc = func(input any) (any, error) {
+		current ChainParameterFunc = func(input any) (any, error) {
 			return input, nil
 		}
 		err error
