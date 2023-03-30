@@ -1,13 +1,41 @@
 package chain
 
-//type Input any
-//
-//type Next any
+import "fmt"
 
-type Chain func(input any, next Chain) Chain
+type ChainFunc func(input any) (any, error)
 
-func Arrange(input any, chinas ...Chain) Chain {
-	for i := range chinas {
-		v := chinas(input)
+type Chain func(ChainFunc) ChainFunc
+
+func BuildChain(input any, mw ...Chain) (any, error) {
+	if len(mw) == 0 {
+		return nil, fmt.Errorf("middleware chain is empty")
 	}
+
+	var (
+		current ChainFunc = func(input any) (any, error) {
+			return input, nil
+		}
+		err error
+	)
+
+	// Build the middleware chain in reverse order.
+	for i := len(mw) - 1; i >= 0; i-- {
+		current = mw[i](current)
+		if current == nil {
+			err = fmt.Errorf("middleware %d returned a nil handler", i)
+			break
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Execute the middleware chain.
+	result, err := current(input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
