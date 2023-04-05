@@ -13,27 +13,34 @@ type Command interface {
 
 	AddCommand(cmds ...Command) error
 
-	Run() error
+	Run(args ...string) error
 }
 
 type Cmd struct {
-	cli *cobra.Command
+	cli      *cobra.Command
+	commands []Command
 }
 
 func NewCmd() *Cmd {
 	return &Cmd{
-		cli: mengineCommand(),
+		cli:      mengineCommand(),
+		commands: make([]Command, 0),
 	}
+}
+
+func (c *Cmd) Init() error {
+	return nil
 }
 
 func (c *Cmd) AddCommand(cmds ...Command) error {
 	for i := range cmds {
 		cmd := cmds[i]
 		if v, ok := cmd.(CobraCommand); ok {
+
 			c.cli.AddCommand(v.Cobra())
+			println("register================================================================")
 		}
 	}
-
 	return nil
 }
 

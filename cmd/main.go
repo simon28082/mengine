@@ -1,22 +1,62 @@
-package cmd
+//go:build wireinject
+// +build wireinject
+
+package main
 
 import (
+	"context"
+	"github.com/google/wire"
 	"github.com/simon/mengine/infrastructure/cmd"
-	"github.com/simon/mengine/infrastructure/support/chain"
-	"github.com/simon/mengine/server/http"
+	"github.com/simon/mengine/infrastructure/container"
+	"github.com/simon/mengine/infrastructure/provider"
+	"github.com/simon/mengine/plugins/server/http"
 )
 
 func main() {
-	var (
-		cmdFunc = func(next chain.ChainFunc) chain.ChainFunc {
-			cmd.NewProvider()
-			return next
-		}
-		httpFunc = func(next chain.ChainFunc) chain.ChainFunc {
-			http.NewProvider()
-			return next
-		}
-	)
+	//var (
+	//	cmdFunc = func(next chain.ChainFunc) chain.ChainFunc {
+	//		InitPro
+	//		return next
+	//	}
+	//	httpFunc = func(next chain.ChainFunc) chain.ChainFunc {
+	//		http.NewProvider()
+	//		return next
+	//	}
+	//)
 
-	chain.BuildChain(cmdFunc, httpFunc)
+	//chain.BuildChain(cmdFunc, httpFunc)
+
+	ctx := context.Background()
+	rootProvider := InitProvider(ctx)
+	httpProvider := InitHttpProvider(ctx)
+
+	err := cmd.Run(rootProvider, httpProvider)
+
+	//err := chain.BuildChain(func(next chain.HandlerFunc) (chain.HandlerFunc, error) {
+	//	println("################################################################")
+	//	rootProvider.Register()
+	//	httpProvider.Register()
+	//	return next, nil
+	//}, func(next chain.HandlerFunc) (chain.HandlerFunc, error) {
+	//	rootProvider.Bootstrap()
+	//	httpProvider.Bootstrap()
+	//	return next, nil
+	//}, func(next chain.HandlerFunc) (chain.HandlerFunc, error) {
+	//	httpProvider.Shutdown()
+	//	rootProvider.Shutdown()
+	//	return next, nil
+	//})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func InitProvider(ctx context.Context) provider.Provider {
+	panic(wire.Build(container.WireContainerSet, cmd.WireProviderSet))
+	return nil
+}
+
+func InitHttpProvider(ctx context.Context) provider.Provider {
+	panic(wire.Build(container.WireContainerSet, http.WireProviderSet))
+	return nil
 }

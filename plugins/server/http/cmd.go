@@ -19,7 +19,7 @@ func (c *cmd) Init() error {
 		Use: `http`,
 	}
 	cli.Run = func(cmd *cobra.Command, args []string) {
-		fmt.Println("http start")
+		fmt.Println("http start..........")
 	}
 
 	c.cli = cli
@@ -31,8 +31,9 @@ func (c *cmd) Cobra() *cobra.Command {
 	return c.cli
 }
 
-func (c cmd) Run() error {
+func (c *cmd) Run(args ...string) error {
 	return nil
+	//return c.cli.Execute()
 }
 
 func (c cmd) AddCommand(cmds ...cmd2.Command) error {

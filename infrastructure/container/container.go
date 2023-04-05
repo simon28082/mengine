@@ -1,6 +1,9 @@
 package container
 
-import "sync"
+import (
+	"github.com/google/wire"
+	"sync"
+)
 
 type Container interface {
 	Get(key string) (any, bool)
@@ -20,7 +23,9 @@ type container struct {
 	box sync.Map
 }
 
-func NewContainer() Container {
+var WireContainerSet = wire.NewSet(wire.InterfaceValue(new(Container), NewContainer()))
+
+func NewContainer() *container {
 	return &container{}
 }
 
