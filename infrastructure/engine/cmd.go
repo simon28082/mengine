@@ -1,4 +1,4 @@
-package cmd
+package engine
 
 import (
 	"fmt"
@@ -65,10 +65,10 @@ func mengineCommand() *cobra.Command {
 		Version: version,
 	}
 
-	//cmd.PersistentFlags().StringP("config", "c", getConfigPath(configPath), "config path")
-	//cmd.PersistentFlags().BoolP("dev", "", false, "open development mode (default production)")
+	//engine.PersistentFlags().StringP("config", "c", getConfigPath(configPath), "config path")
+	//engine.PersistentFlags().BoolP("dev", "", false, "open development mode (default production)")
 
-	//cmd.SetVersionTemplate("{{with .Short}}{{printf \"%s \" .}}{{end}}{{printf \"Version %s\" .Version}}\n")
+	//engine.SetVersionTemplate("{{with .Short}}{{printf \"%s \" .}}{{end}}{{printf \"Version %s\" .Version}}\n")
 
 	return cmd
 }

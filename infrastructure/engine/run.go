@@ -1,4 +1,4 @@
-package cmd
+package engine
 
 import (
 	provider2 "github.com/simon/mengine/infrastructure/provider"

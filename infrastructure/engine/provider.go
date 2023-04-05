@@ -1,4 +1,4 @@
-package cmd
+package engine
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 const (
 	ProviderName     = `root`
-	ContainerCmdName = `root.cmd`
+	ContainerCmdName = `root.engine`
 )
 
 var WireProviderSet = wire.NewSet(NewProvider)

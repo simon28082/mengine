@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/google/wire"
-	cmd2 "github.com/simon/mengine/infrastructure/cmd"
 	"github.com/simon/mengine/infrastructure/container"
+	cmd2 "github.com/simon/mengine/infrastructure/engine"
 	provider2 "github.com/simon/mengine/infrastructure/provider"
 )
 
 const (
 	ProviderName     = `http`
-	ContainerCmdName = `http.cmd`
+	ContainerCmdName = `http.engine`
 )
 
 var WireProviderSet = wire.NewSet(NewProvider)

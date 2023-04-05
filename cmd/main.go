@@ -6,8 +6,8 @@ package main
 import (
 	"context"
 	"github.com/google/wire"
-	"github.com/simon/mengine/infrastructure/cmd"
 	"github.com/simon/mengine/infrastructure/container"
+	"github.com/simon/mengine/infrastructure/engine"
 	"github.com/simon/mengine/infrastructure/provider"
 	"github.com/simon/mengine/plugins/server/http"
 )
@@ -30,7 +30,7 @@ func main() {
 	rootProvider := InitProvider(ctx)
 	httpProvider := InitHttpProvider(ctx)
 
-	err := cmd.Run(rootProvider, httpProvider)
+	err := engine.Run(rootProvider, httpProvider)
 
 	//err := chain.BuildChain(func(next chain.HandlerFunc) (chain.HandlerFunc, error) {
 	//	println("################################################################")
@@ -52,7 +52,7 @@ func main() {
 }
 
 func InitProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(container.WireContainerSet, cmd.WireProviderSet))
+	panic(wire.Build(container.WireContainerSet, engine.WireProviderSet))
 	return nil
 }
 
