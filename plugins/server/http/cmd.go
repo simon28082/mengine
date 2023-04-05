@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"github.com/google/wire"
 	cmd2 "github.com/simon/mengine/infrastructure/engine"
 	"github.com/spf13/cobra"
 )
@@ -9,6 +10,8 @@ import (
 type cmd struct {
 	cli *cobra.Command
 }
+
+var WireCmdSet = wire.NewSet(wire.InterfaceValue(new(cmd2.Command), NewCmd()))
 
 func NewCmd() *cmd {
 	return &cmd{}

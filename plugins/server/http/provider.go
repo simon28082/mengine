@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/google/wire"
 	"github.com/simon/mengine/infrastructure/container"
 	cmd2 "github.com/simon/mengine/infrastructure/engine"
@@ -17,15 +16,23 @@ const (
 
 var WireProviderSet = wire.NewSet(NewProvider)
 
+//var WireProviderSet = wire.NewSet(container.WireContainerSet, cmd2.WireCmdSet, wire.Struct(new(provider), "container", "engine"))
+
+//var WireProviderSet = wire.NewSet(NewProvider)
+
 type provider struct {
 	ctx       context.Context
 	container container.Container
+	engine    cmd2.Command
+	httpCmd   *cmd
 }
 
-func NewProvider(ctx context.Context, container container.Container) provider2.Provider {
+func NewProvider(ctx context.Context, container container.Container, engine cmd2.Command) provider2.Provider {
 	return &provider{
 		ctx:       ctx,
 		container: container,
+		engine:    engine,
+		httpCmd:   NewCmd(),
 	}
 }
 
@@ -35,24 +42,26 @@ func (p *provider) Name() string {
 
 func (p *provider) Prepare() error {
 	fmt.Println("http provider Register")
-	httpCmd := NewCmd()
-	httpCmd.Init()
-	cmd, ok := p.container.Get(cmd2.ContainerCmdName)
-	spew.Dump("===ok==", ok)
-	if ok {
-		fmt.Println("################################")
-		cmd.(cmd2.Command).AddCommand(httpCmd)
-	}
-	p.container.Put(ContainerCmdName, httpCmd)
+	//httpCmd := NewCmd()
+	p.httpCmd.Init()
+	p.engine.AddCommand(p.httpCmd)
+	//cmd, ok := p.container.Get(cmd2.ContainerCmdName)
+	//spew.Dump("===ok==", ok)
+	//if ok {
+	//	fmt.Println("################################")
+	//	cmd.(cmd2.Command).AddCommand(httpCmd)
+	//}
+	//p.container.Put(ContainerCmdName, httpCmd)
 	return nil
 }
 
 func (p *provider) Run() error {
 	fmt.Println("http provider Bootstrap")
-	cmd, ok := p.container.Get(ContainerCmdName)
-	if ok {
-		cmd.(cmd2.Command).Run()
-	}
+	//cmd, ok := p.container.Get(ContainerCmdName)
+	//if ok {
+	//	cmd.(cmd2.Command).Run()
+	//}
+	p.httpCmd.Run()
 	return nil
 }
 

@@ -27,7 +27,7 @@ func main() {
 	//chain.BuildChain(cmdFunc, httpFunc)
 
 	ctx := context.Background()
-	rootProvider := InitProvider(ctx)
+	rootProvider := InitEngineProvider(ctx)
 	httpProvider := InitHttpProvider(ctx)
 
 	err := engine.Run(rootProvider, httpProvider)
@@ -51,12 +51,12 @@ func main() {
 	}
 }
 
-func InitProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(container.WireContainerSet, engine.WireProviderSet))
+func InitEngineProvider(ctx context.Context) provider.Provider {
+	panic(wire.Build(container.WireContainerSet, engine.WireProviderSet, engine.WireCmdSet))
 	return nil
 }
 
 func InitHttpProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(container.WireContainerSet, http.WireProviderSet))
+	panic(wire.Build(container.WireContainerSet, engine.WireCmdSet, http.WireProviderSet))
 	return nil
 }

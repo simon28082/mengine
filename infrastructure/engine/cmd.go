@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/google/wire"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
@@ -20,6 +21,8 @@ type Cmd struct {
 	cli      *cobra.Command
 	commands []Command
 }
+
+var WireCmdSet = wire.NewSet(wire.InterfaceValue(new(Command), NewCmd()))
 
 func NewCmd() *Cmd {
 	return &Cmd{
