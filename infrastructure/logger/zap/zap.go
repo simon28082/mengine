@@ -23,14 +23,21 @@ func NewZap() (*zap, error) {
 }
 
 func (z *zap) Log(level logger.Level, message string, context map[string]any) {
-	var fields = make([]zap2.Field, len(context))
 	z.fields.Range(func(key, value any) bool {
-		fields = append(fields, zap2.Any(key.(string), value))
+		context[key.(string)] = value
 		return true
 	})
-	if len(context) > 0 {
-		for k, v := range context {
-			fields = append(fields, zap2.Any(k, v))
+
+	var (
+		contextLength = len(context)
+		fields        []zap2.Field
+	)
+	if contextLength > 0 {
+		fields = make([]zap2.Field, contextLength)
+		var i = 0
+		for key, value := range context {
+			fields[i] = zap2.Any(key, value)
+			i++
 		}
 	}
 

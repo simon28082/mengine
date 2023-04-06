@@ -18,4 +18,6 @@ func TestNewZap(t *testing.T) {
 			"subBool": false,
 		},
 	})
+
+	l.Log(logger.Debug, "without params", nil)
 }
