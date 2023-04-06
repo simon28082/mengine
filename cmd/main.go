@@ -6,7 +6,6 @@ package main
 import (
 	"context"
 	"github.com/google/wire"
-	"github.com/simon/mengine/infrastructure/container"
 	"github.com/simon/mengine/infrastructure/engine"
 	"github.com/simon/mengine/infrastructure/provider"
 	"github.com/simon/mengine/plugins/server/http"
@@ -52,11 +51,11 @@ func main() {
 }
 
 func InitEngineProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(container.WireContainerSet, engine.WireProviderSet, engine.WireCmdSet))
+	panic(wire.Build(engine.WireProviderSet))
 	return nil
 }
 
 func InitHttpProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(container.WireContainerSet, engine.WireCmdSet, http.WireProviderSet))
+	panic(wire.Build(http.WireProviderSet))
 	return nil
 }

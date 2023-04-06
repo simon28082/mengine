@@ -8,7 +8,6 @@ package main
 
 import (
 	"context"
-	"github.com/simon/mengine/infrastructure/container"
 	"github.com/simon/mengine/infrastructure/engine"
 	"github.com/simon/mengine/infrastructure/provider"
 	"github.com/simon/mengine/plugins/server/http"
@@ -17,21 +16,18 @@ import (
 // Injectors from main.go:
 
 func InitEngineProvider(ctx context.Context) provider.Provider {
-	container := _wireContainerValue
 	command := _wireCmdValue
-	providerProvider := engine.NewProvider(ctx, container, command)
+	providerProvider := engine.NewProvider(ctx, command)
 	return providerProvider
 }
 
 var (
-	_wireContainerValue = container.NewContainer()
-	_wireCmdValue       = engine.NewCmd()
+	_wireCmdValue = engine.NewCmd()
 )
 
 func InitHttpProvider(ctx context.Context) provider.Provider {
-	containerContainer := _wireContainerValue
 	command := _wireCmdValue
-	providerProvider := http.NewProvider(ctx, containerContainer, command)
+	providerProvider := http.NewProvider(ctx, command)
 	return providerProvider
 }
 

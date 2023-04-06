@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/wire"
-	"github.com/simon/mengine/infrastructure/container"
 	provider2 "github.com/simon/mengine/infrastructure/provider"
 )
 
@@ -13,20 +12,18 @@ const (
 	ContainerCmdName = `root.engine`
 )
 
-var WireProviderSet = wire.NewSet(NewProvider)
+var WireProviderSet = wire.NewSet(NewProvider, WireCmdSet)
 
 type provider struct {
-	ctx       context.Context
-	cancel    context.CancelFunc
-	container container.Container
-	cmd       Command
+	ctx    context.Context
+	cancel context.CancelFunc
+	cmd    Command
 }
 
-func NewProvider(ctx context.Context, container container.Container, cmd Command) provider2.Provider {
+func NewProvider(ctx context.Context, cmd Command) provider2.Provider {
 	return &provider{
-		ctx:       ctx,
-		container: container,
-		cmd:       cmd,
+		ctx: ctx,
+		cmd: cmd,
 	}
 }
 

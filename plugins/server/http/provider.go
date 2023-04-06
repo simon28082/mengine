@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/wire"
-	"github.com/simon/mengine/infrastructure/container"
 	cmd2 "github.com/simon/mengine/infrastructure/engine"
 	provider2 "github.com/simon/mengine/infrastructure/provider"
 )
@@ -14,25 +13,23 @@ const (
 	ContainerCmdName = `http.engine`
 )
 
-var WireProviderSet = wire.NewSet(NewProvider)
+var WireProviderSet = wire.NewSet(NewProvider, cmd2.WireCmdSet)
 
 //var WireProviderSet = wire.NewSet(container.WireContainerSet, cmd2.WireCmdSet, wire.Struct(new(provider), "container", "engine"))
 
 //var WireProviderSet = wire.NewSet(NewProvider)
 
 type provider struct {
-	ctx       context.Context
-	container container.Container
-	engine    cmd2.Command
-	httpCmd   *cmd
+	ctx     context.Context
+	engine  cmd2.Command
+	httpCmd *cmd
 }
 
-func NewProvider(ctx context.Context, container container.Container, engine cmd2.Command) provider2.Provider {
+func NewProvider(ctx context.Context, engine cmd2.Command) provider2.Provider {
 	return &provider{
-		ctx:       ctx,
-		container: container,
-		engine:    engine,
-		httpCmd:   NewCmd(),
+		ctx:     ctx,
+		engine:  engine,
+		httpCmd: NewCmd(),
 	}
 }
 
