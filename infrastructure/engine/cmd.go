@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-var WireCmdSet = wire.NewSet(wire.InterfaceValue(new(Command), NewCmd()))
-
 type Command interface {
 	Init() error
 
@@ -23,6 +21,8 @@ type Cmd struct {
 	cli      *cobra.Command
 	commands []Command
 }
+
+var WireCmdSet = wire.NewSet(NewCmd, wire.Bind(new(Command), new(*Cmd)))
 
 func NewCmd() *Cmd {
 	return &Cmd{

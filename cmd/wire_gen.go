@@ -9,26 +9,27 @@ package main
 import (
 	"context"
 	"github.com/simon/mengine/infrastructure/engine"
-	"github.com/simon/mengine/infrastructure/provider"
-	"github.com/simon/mengine/plugins/server/http"
+	"github.com/simon/mengine/infrastructure/logger/wrap"
+	"github.com/simon/mengine/infrastructure/logger/zap"
 )
 
 // Injectors from main.go:
 
-func InitEngineProvider(ctx context.Context) provider.Provider {
-	command := _wireCmdValue
-	providerProvider := engine.NewProvider(ctx, command)
-	return providerProvider
+func InitLogger() (*wrap.LoggerWrap, error) {
+	zapZap, err := zap.NewZapDevelopment()
+	if err != nil {
+		return nil, err
+	}
+	loggerWrap := wrap.NewLogger(zapZap)
+	return loggerWrap, nil
 }
 
-var (
-	_wireCmdValue = engine.NewCmd()
-)
-
-func InitHttpProvider(ctx context.Context) provider.Provider {
-	command := _wireCmdValue
-	providerProvider := http.NewProvider(ctx, command)
-	return providerProvider
+func InitEngine(ctx context.Context) engine.Engine {
+	container := engine.NewContainer()
+	cmd := engine.NewCmd()
+	process := engine.NewProcess(ctx, cmd)
+	engineEngine := engine.NewEngine(ctx, container, process)
+	return engineEngine
 }
 
 // main.go:
@@ -36,12 +37,6 @@ func InitHttpProvider(ctx context.Context) provider.Provider {
 func main() {
 
 	ctx := context.Background()
-	rootProvider := InitEngineProvider(ctx)
-	httpProvider := InitHttpProvider(ctx)
+	InitEngine(ctx)
 
-	err := engine.Run(rootProvider, httpProvider)
-
-	if err != nil {
-		panic(err)
-	}
 }

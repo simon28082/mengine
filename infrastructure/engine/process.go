@@ -1,6 +1,6 @@
-package provider
+package engine
 
-type Provider interface {
+type Process interface {
 	Name() string
 
 	Prepare() error

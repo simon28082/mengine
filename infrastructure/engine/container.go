@@ -1,4 +1,4 @@
-package container
+package engine
 
 import (
 	"github.com/google/wire"
@@ -23,7 +23,7 @@ type container struct {
 	box sync.Map
 }
 
-var WireContainerSet = wire.NewSet(wire.InterfaceValue(new(Container), NewContainer()))
+var WireContainerSet = wire.NewSet(NewContainer, wire.Bind(new(Container), new(*container)))
 
 func NewContainer() *container {
 	return &container{}

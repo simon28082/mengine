@@ -2,6 +2,7 @@ package zap
 
 import (
 	"fmt"
+	"github.com/google/wire"
 	"github.com/simon/mengine/infrastructure/logger"
 	zap2 "go.uber.org/zap"
 	"sync"
@@ -12,8 +13,20 @@ type zap struct {
 	fields sync.Map
 }
 
-func NewZap() (*zap, error) {
+var WireZapDevelopmentSet = wire.NewSet(NewZapDevelopment, wire.Bind(new(logger.Logger), new(*zap)))
+
+func NewZapDevelopment() (*zap, error) {
 	zapLogger, err := zap2.NewDevelopment()
+	if err != nil {
+		return nil, err
+	}
+	return &zap{
+		logger: zapLogger,
+	}, nil
+}
+
+func NewZapProduction() (*zap, error) {
+	zapLogger, err := zap2.NewProduction()
 	if err != nil {
 		return nil, err
 	}

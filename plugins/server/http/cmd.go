@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var WireCmdSet = wire.NewSet(wire.InterfaceValue(new(cmd2.Command), NewCmd()))
+var WireCmdSet = wire.NewSet(new(cmd), NewCmd)
 
 type cmd struct {
 	cli *cobra.Command

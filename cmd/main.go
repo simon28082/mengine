@@ -7,8 +7,7 @@ import (
 	"context"
 	"github.com/google/wire"
 	"github.com/simon/mengine/infrastructure/engine"
-	"github.com/simon/mengine/infrastructure/provider"
-	"github.com/simon/mengine/plugins/server/http"
+	logger2 "github.com/simon/mengine/infrastructure/logger/wrap"
 )
 
 func main() {
@@ -26,10 +25,11 @@ func main() {
 	//chain.BuildChain(cmdFunc, httpFunc)
 
 	ctx := context.Background()
-	rootProvider := InitEngineProvider(ctx)
-	httpProvider := InitHttpProvider(ctx)
+	InitEngine(ctx)
+	//rootProvider := InitEngineProvider(ctx)
+	//httpProvider := InitHttpProvider(ctx)
 
-	err := engine.Run(rootProvider, httpProvider)
+	//err := engine.Run(rootProvider, httpProvider)
 
 	//err := chain.BuildChain(func(next chain.HandlerFunc) (chain.HandlerFunc, error) {
 	//	println("################################################################")
@@ -45,17 +45,26 @@ func main() {
 	//	rootProvider.Shutdown()
 	//	return next, nil
 	//})
-	if err != nil {
-		panic(err)
-	}
+	//if err != nil {
+	//	panic(err)
+	//}
 }
 
-func InitEngineProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(engine.WireProviderSet))
+func InitLogger() (*logger2.LoggerWrap, error) {
+	panic(wire.Build(logger2.WireLoggerZapSet))
+}
+
+func InitEngine(ctx context.Context) engine.Engine {
+	panic(wire.Build(engine.WireEngineSet))
 	return nil
 }
 
-func InitHttpProvider(ctx context.Context) provider.Provider {
-	panic(wire.Build(http.WireProviderSet))
-	return nil
-}
+//func InitEngineProvider(ctx context.Context) provider.Provider {
+//	panic(wire.Build(engine.WireProviderSet))
+//	return nil
+//}
+
+//func InitHttpProvider(ctx context.Context) provider.Provider {
+//	panic(wire.Build(http.WireProviderSet))
+//	return nil
+//}

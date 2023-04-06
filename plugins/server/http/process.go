@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/wire"
-	cmd2 "github.com/simon/mengine/infrastructure/engine"
-	provider2 "github.com/simon/mengine/infrastructure/provider"
+	"github.com/simon/mengine/infrastructure/engine"
 )
 
 const (
@@ -13,31 +12,31 @@ const (
 	ContainerCmdName = `http.engine`
 )
 
-var WireProviderSet = wire.NewSet(NewProvider, cmd2.WireCmdSet)
+var WireProcessSet = wire.NewSet(NewProcess, engine.WireCmdSet)
 
 //var WireProviderSet = wire.NewSet(container.WireContainerSet, cmd2.WireCmdSet, wire.Struct(new(provider), "container", "engine"))
 
 //var WireProviderSet = wire.NewSet(NewProvider)
 
-type provider struct {
+type process struct {
 	ctx     context.Context
-	engine  cmd2.Command
+	engine  engine.Command
 	httpCmd *cmd
 }
 
-func NewProvider(ctx context.Context, engine cmd2.Command) provider2.Provider {
-	return &provider{
+func NewProcess(ctx context.Context, engine engine.Command) engine.Process {
+	return &process{
 		ctx:     ctx,
 		engine:  engine,
 		httpCmd: NewCmd(),
 	}
 }
 
-func (p *provider) Name() string {
+func (p *process) Name() string {
 	return ProviderName
 }
 
-func (p *provider) Prepare() error {
+func (p *process) Prepare() error {
 	fmt.Println("http provider Register")
 	//httpCmd := NewCmd()
 	p.httpCmd.Init()
@@ -52,7 +51,7 @@ func (p *provider) Prepare() error {
 	return nil
 }
 
-func (p *provider) Run() error {
+func (p *process) Run() error {
 	fmt.Println("http provider Bootstrap")
 	//cmd, ok := p.container.Get(ContainerCmdName)
 	//if ok {
@@ -62,7 +61,7 @@ func (p *provider) Run() error {
 	return nil
 }
 
-func (p *provider) Shutdown() error {
+func (p *process) Shutdown() error {
 	fmt.Println("http provider shutdown")
 
 	return nil

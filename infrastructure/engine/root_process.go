@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/wire"
-	provider2 "github.com/simon/mengine/infrastructure/provider"
 )
 
 const (
@@ -12,26 +11,26 @@ const (
 	ContainerCmdName = `root.engine`
 )
 
-var WireProviderSet = wire.NewSet(NewProvider, WireCmdSet)
+var WireProcessSet = wire.NewSet(NewProcess, WireCmdSet)
 
-type provider struct {
+type process struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	cmd    Command
 }
 
-func NewProvider(ctx context.Context, cmd Command) provider2.Provider {
-	return &provider{
+func NewProcess(ctx context.Context, cmd Command) Process {
+	return &process{
 		ctx: ctx,
 		cmd: cmd,
 	}
 }
 
-func (p provider) Name() string {
+func (p *process) Name() string {
 	return ProviderName
 }
 
-func (p *provider) Prepare() error {
+func (p *process) Prepare() error {
 	fmt.Println("root provider register")
 
 	p.cmd.Init()
@@ -43,7 +42,7 @@ func (p *provider) Prepare() error {
 	return nil
 }
 
-func (p *provider) Run() error {
+func (p *process) Run() error {
 	fmt.Println("root provider bootstrap")
 
 	p.cmd.Run()
@@ -54,7 +53,7 @@ func (p *provider) Run() error {
 	return nil
 }
 
-func (p *provider) Shutdown() error {
+func (p *process) Shutdown() error {
 	fmt.Println("root provider Shutdown")
 
 	return nil
