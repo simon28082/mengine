@@ -1,7 +1,7 @@
 package zap
 
 import (
-	"github.com/simon/mengine/infrastructure/logger"
+	"github.com/simon28082/mengine/infrastructure/logger"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -3,7 +3,7 @@ package zap
 import (
 	"fmt"
 	"github.com/google/wire"
-	"github.com/simon/mengine/infrastructure/logger"
+	"github.com/simon28082/mengine/infrastructure/logger"
 	zap2 "go.uber.org/zap"
 	"sync"
 )

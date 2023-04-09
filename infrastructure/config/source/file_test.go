@@ -2,7 +2,7 @@ package source
 
 import (
 	"fmt"
-	os2 "github.com/simon/mengine/infrastructure/support/os"
+	os2 "github.com/simon28082/mengine/infrastructure/support/os"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"os"

@@ -2,7 +2,7 @@ package wrap
 
 import (
 	"github.com/google/wire"
-	"github.com/simon/mengine/infrastructure/logger/zap"
+	"github.com/simon28082/mengine/infrastructure/logger/zap"
 	"sync"
 )
 

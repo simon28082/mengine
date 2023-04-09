@@ -8,8 +8,8 @@ package engine
 
 import (
 	"context"
-	"github.com/simon/mengine/infrastructure/logger/wrap"
-	"github.com/simon/mengine/infrastructure/logger/zap"
+	"github.com/simon28082/mengine/infrastructure/logger/wrap"
+	"github.com/simon28082/mengine/infrastructure/logger/zap"
 )
 
 // Injectors from wire.go:

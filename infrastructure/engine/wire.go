@@ -6,7 +6,7 @@ package engine
 import (
 	"context"
 	"github.com/google/wire"
-	logger2 "github.com/simon/mengine/infrastructure/logger/wrap"
+	logger2 "github.com/simon28082/mengine/infrastructure/logger/wrap"
 )
 
 func EngineProvide(ctx context.Context) Engine {

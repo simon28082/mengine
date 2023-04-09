@@ -2,7 +2,7 @@ package config
 
 import (
 	"bytes"
-	"github.com/simon/mengine/infrastructure/config/source"
+	"github.com/simon28082/mengine/infrastructure/config/source"
 	"github.com/sourcegraph/conc/panics"
 	"github.com/spf13/viper"
 )
