@@ -2,12 +2,16 @@ package service
 
 import (
 	"context"
+	errors2 "errors"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	openai "github.com/sashabaranov/go-openai"
 	"github.com/simon/mengine/infrastructure/errors"
+	"io"
+	"log"
 	"os"
 	"sync"
+	"time"
 )
 
 var (
@@ -32,39 +36,82 @@ type cacheValue struct {
 }
 
 func NewAi() *Ai {
+	config := openai.DefaultConfig(Token)
+	config.HTTPClient.Timeout = time.Minute * 2
 	return &Ai{
 		token:     Token,
-		gptClient: openai.NewClient(Token),
+		gptClient: openai.NewClientWithConfig(config),
 		cache:     make(map[string]*cacheValue),
 	}
 }
 
-func (a *Ai) Completion(ctx context.Context, req openai.ChatCompletionRequest) (string, error) {
+func (a *Ai) Completion(ctx context.Context, req openai.ChatCompletionRequest) (*openai.ChatCompletionResponse, error) {
 	if len(req.Model) == 0 {
 		req.Model = openai.GPT3Dot5Turbo
 	}
 	if req.MaxTokens == 0 {
-		req.MaxTokens = 1024
+		req.MaxTokens = 50
 	}
 	if len(req.User) == 0 {
 		req.User = defaultUserId
 	}
 	if len(req.Messages) == 0 {
-		return ``, errors.NewDefault(`message length must required`)
+		return nil, errors.NewDefault(`message length must required`)
 	}
-
 	resp, err := a.gptClient.CreateChatCompletion(
 		ctx, req,
 	)
 
 	if err != nil {
-		fmt.Printf("ChatCompletion error: %v\n", err)
-		return ``, err
+		return nil, err
 	}
 
-	spew.Dump(resp.Choices[0].Message.Content)
-	spew.Dump(resp)
-	return defaultAnswer, nil
+	return &resp, nil
+}
+
+func (a *Ai) CompletionStream(ctx context.Context, req openai.ChatCompletionRequest) (<-chan *openai.ChatCompletionStreamResponse, error) {
+	if len(req.Model) == 0 {
+		req.Model = openai.GPT3Dot5Turbo
+	}
+	if req.MaxTokens == 0 {
+		req.MaxTokens = 20
+	}
+	//if len(req.User) == 0 {
+	//	req.User = defaultUserId
+	//}
+	if len(req.Messages) == 0 {
+		return nil, errors.NewDefault(`message length must required`)
+	}
+	req.Stream = true
+	stream, err := a.gptClient.CreateChatCompletionStream(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("Stream response: ")
+
+	var streamResponses = make(chan *openai.ChatCompletionStreamResponse, 2)
+	go func() {
+		defer func() {
+			close(streamResponses)
+			stream.Close()
+		}()
+		for {
+			response, err := stream.Recv()
+			spew.Dump(response, err)
+			if errors2.Is(err, io.EOF) {
+				fmt.Println("\nStream finished")
+				return
+			}
+
+			if err != nil {
+				log.Println("get stream failed", err)
+				return
+			}
+
+			streamResponses <- &response
+		}
+	}()
+	return streamResponses, nil
 }
 
 //

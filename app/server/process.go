@@ -32,9 +32,9 @@ func (p *process) Global() bool {
 }
 
 func (p *process) Prepare(engine engine.Engine) error {
-	service.DefaultAi = service.NewAi("")
+	service.DefaultAi = service.NewAi()
 	handler.DefaultHandler = &handler.Handler{Ai: service.DefaultAi}
-
+	p.gin.LoadHTMLGlob("*.html")
 	registerRoutes(p.gin, handler.DefaultHandler)
 	return nil
 }
