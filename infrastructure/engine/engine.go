@@ -46,10 +46,17 @@ type engine struct {
 var (
 	WireEngineSet = wire.NewSet(NewEngine)
 
-	processFunc = func(processes []Process, fn processHandleFunc) error {
+	processFunc = func(processes []Process, fn processHandleFunc, use string) error {
 		for i := range processes {
 			if processes[i].Global() == false {
-				continue
+				cobra, ok := processes[i].(CobraCommand)
+				if !ok {
+					continue
+				}
+
+				if cobra.Cobra().Use != use {
+					continue
+				}
 			}
 			if err := fn(processes[i]); err != nil {
 				return err
@@ -177,11 +184,11 @@ func (e *engine) cobraPersistentPreRunE(cmd *cobra.Command, args []string) error
 
 	return processFunc(e.processes, func(process Process) error {
 		return process.Prepare(e)
-	})
+	}, cmd.Use)
 }
 
 func (e *engine) cobraPersistentPostRunE(cmd *cobra.Command, args []string) error {
 	return processFunc(e.processes, func(process Process) error {
 		return process.Shutdown(e)
-	})
+	}, cmd.Use)
 }

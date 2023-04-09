@@ -10,4 +10,4 @@ build:
 
 .PHONY:run
 run:
-	go run -tags '!wireinject' cmd/wire_gen.go
+	go run -tags '!wireinject' app/cmd/main.go

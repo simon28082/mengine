@@ -23,7 +23,9 @@ type container struct {
 	box sync.Map
 }
 
-var WireContainerSet = wire.NewSet(NewContainer, wire.Bind(new(Container), new(*container)))
+var WireContainerSet = wire.NewSet(NewContainer)
+
+//var WireContainerSet = wire.NewSet(NewContainer, wire.Bind(new(Container), new(*container)))
 
 func NewContainer() *container {
 	return &container{}
