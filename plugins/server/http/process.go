@@ -3,44 +3,59 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/google/wire"
 	"github.com/simon/mengine/infrastructure/engine"
+	logger2 "github.com/simon/mengine/infrastructure/logger/wrap"
+	"github.com/spf13/cobra"
 )
 
-const (
-	ProviderName     = `http`
-	ContainerCmdName = `http.engine`
-)
-
-var WireProcessSet = wire.NewSet(NewProcess, engine.WireCmdSet)
+// var WireProcessSet = wire.NewSet(NewProcess, engine.WireCmdSet, logger2.WireZapLoggerProductionSet)
+var WireProcessSet = wire.NewSet(NewProcess)
 
 //var WireProviderSet = wire.NewSet(container.WireContainerSet, cmd2.WireCmdSet, wire.Struct(new(provider), "container", "engine"))
 
 //var WireProviderSet = wire.NewSet(NewProvider)
 
 type process struct {
-	ctx     context.Context
-	engine  engine.Command
-	httpCmd *cmd
+	ctx    context.Context
+	logger *logger2.LoggerWrap
+	engine engine.Engine
 }
 
-func NewProcess(ctx context.Context, engine engine.Command) engine.Process {
-	return &process{
-		ctx:     ctx,
-		engine:  engine,
-		httpCmd: NewCmd(),
-	}
+func NewProcess() engine.Process {
+	return &process{}
 }
 
+func (p *process) Global() bool {
+	return false
+}
 func (p *process) Name() string {
-	return ProviderName
+	return `http`
 }
 
-func (p *process) Prepare() error {
+func (p *process) Cobra() *cobra.Command {
+	cli := &cobra.Command{
+		Use: `http`,
+	}
+	cli.Run = func(cmd *cobra.Command, args []string) {
+		fmt.Println("http start..........")
+		fmt.Println("http==================")
+		spew.Dump(cmd.Flag("log-path").Value.String())
+	}
+
+	return cli
+}
+
+func (p *process) Prepare(e engine.Engine) error {
 	fmt.Println("http provider Register")
+	//p.httpCmd.Init()
+	//rootCommand, _ := p.engine.Get(`command.root`)
+	//rootCommand.(engine.Command).AddCommand(p.httpCmd)
+
 	//httpCmd := NewCmd()
-	p.httpCmd.Init()
-	p.engine.AddCommand(p.httpCmd)
+
+	//p.engine.AddCommand(p.httpCmd)
 	//cmd, ok := p.container.Get(cmd2.ContainerCmdName)
 	//spew.Dump("===ok==", ok)
 	//if ok {
@@ -51,17 +66,7 @@ func (p *process) Prepare() error {
 	return nil
 }
 
-func (p *process) Run() error {
-	fmt.Println("http provider Bootstrap")
-	//cmd, ok := p.container.Get(ContainerCmdName)
-	//if ok {
-	//	cmd.(cmd2.Command).Run()
-	//}
-	p.httpCmd.Run()
-	return nil
-}
-
-func (p *process) Shutdown() error {
+func (p *process) Shutdown(e engine.Engine) error {
 	fmt.Println("http provider shutdown")
 
 	return nil

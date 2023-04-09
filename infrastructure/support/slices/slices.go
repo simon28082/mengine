@@ -20,3 +20,12 @@ func ConvertToMap(lists []any) (map[any]any, error) {
 
 	return m, nil
 }
+
+func InSlice[T comparable](key T, targets []T) bool {
+	for i := range targets {
+		if targets[i] == key {
+			return true
+		}
+	}
+	return false
+}

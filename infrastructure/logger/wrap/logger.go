@@ -10,7 +10,10 @@ type LoggerWrap struct {
 	logger logger.Logger
 }
 
-var WireLoggerZapSet = wire.NewSet(NewLogger, zap.WireZapDevelopmentSet)
+var (
+	WireLoggerZapDevelopmentSet = wire.NewSet(NewLogger, zap.WireZapDevelopmentSet)
+	WireLoggerZapProductionSet  = wire.NewSet(NewLogger, zap.WireZapProductionSet)
+)
 
 func NewLogger(logger logger.Logger) *LoggerWrap {
 	return &LoggerWrap{

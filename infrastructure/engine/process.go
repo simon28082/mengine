@@ -3,9 +3,9 @@ package engine
 type Process interface {
 	Name() string
 
-	Prepare() error
+	Global() bool
 
-	Run() error
+	Prepare(engine Engine) error
 
-	Shutdown() error
+	Shutdown(engine Engine) error
 }

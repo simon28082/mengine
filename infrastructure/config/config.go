@@ -1,37 +1,90 @@
 package config
 
 import (
+	"bytes"
+	"github.com/simon/mengine/infrastructure/config/source"
+	"github.com/sourcegraph/conc/panics"
 	"github.com/spf13/viper"
-	"time"
 )
 
-// Config is an interface abstraction for dynamic configuration
 type Config interface {
 	Get(path string) Value
+
 	Set(path string, val any)
+
 	Delete(path string) error
 }
 
-// Value represents a value of any type
-type Value interface {
-	Exists() bool
-	Bool() bool
-	BoolDef(def bool) bool
-	Int(def int) int
-	String(def string) string
-	Float64(def float64) float64
-	Duration(def time.Duration) time.Duration
-	StringSlice(def []string) []string
-	StringMap(def map[string]string) map[string]string
-	Scan(val interface{}) error
-	Bytes() []byte
+//type Reloader interface {
+//	Reload(contents []byte) error
+//}
+
+type config struct {
+	viper  *viper.Viper
+	source source.Source
 }
 
-func a() {
-	//mapstructure.DecodeHookFuncType()
-	viper.SetDefault("a.b.c", "content")
-	viper.ReadInConfig()
-	//viper.GetViper().Set()
-	//viper.UnsupportedRemoteProviderError()
-	//viper.Get
+//var WireConfigFileSourceSet = wire.NewSet(NewConfig, source.WireFileSourceSet)
+
+func NewConfig(source source.Source) (*config, error) {
+	reader, err := source.Read()
+	if err != nil {
+		return nil, err
+	}
+	vp := viper.New()
+	err1 := vp.ReadConfig(reader)
+	if err1 != nil {
+		return nil, err1
+	}
+
+	c := &config{
+		viper:  vp,
+		source: source,
+	}
+	if err := c.watch(); err != nil {
+		return nil, err
+	}
+	return c, nil
 }
+
+func (c *config) Get(path string) Value {
+	v := c.viper.Get(path)
+	return &value{v: v}
+}
+
+func (c *config) Set(path string, val any) {
+	c.viper.Set(path, val)
+}
+
+func (c *config) Delete(path string) error {
+	c.viper.Set(path, nil)
+	return nil
+}
+
+func (c *config) watch() error {
+	notifier, ok := c.source.(source.Notifier)
+	if !ok {
+		return nil
+	}
+
+	notification, err := notifier.Notify()
+	if err != nil {
+		return err
+	}
+
+	var pc panics.Catcher
+	go pc.Try(func() {
+		for v := range notification {
+			if err != nil {
+				return
+			}
+			c.viper.ReadConfig(bytes.NewBuffer(v))
+		}
+	})
+
+	return pc.Recovered().AsError()
+}
+
+//func (c *config) Reload(contents []byte) error {
+//	return c.viper.ReadConfig(bytes.NewBuffer(contents))
+//}

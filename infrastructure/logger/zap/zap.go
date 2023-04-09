@@ -13,26 +13,29 @@ type zap struct {
 	fields sync.Map
 }
 
-var WireZapDevelopmentSet = wire.NewSet(NewZapDevelopment, wire.Bind(new(logger.Logger), new(*zap)))
+var (
+	WireZapDevelopmentSet = wire.NewSet(NewZapDevelopment, wire.Bind(new(logger.Logger), new(*zap)))
+	WireZapProductionSet  = wire.NewSet(NewZapProduction, wire.Bind(new(logger.Logger), new(*zap)))
+)
 
-func NewZapDevelopment() (*zap, error) {
+func NewZapDevelopment() *zap {
 	zapLogger, err := zap2.NewDevelopment()
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	return &zap{
 		logger: zapLogger,
-	}, nil
+	}
 }
 
-func NewZapProduction() (*zap, error) {
+func NewZapProduction() *zap {
 	zapLogger, err := zap2.NewProduction()
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	return &zap{
 		logger: zapLogger,
-	}, nil
+	}
 }
 
 func (z *zap) Log(level logger.Level, message string, context map[string]any) {
