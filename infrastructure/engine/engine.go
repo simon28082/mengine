@@ -165,6 +165,8 @@ func (e *engine) cobraCommandRegister() {
 }
 
 func (e *engine) cobraPersistentPreRunE(cmd *cobra.Command, args []string) error {
+	e.container.Put(`cmd`, cmd)
+
 	var (
 		logPath    = cmd.Flag("log-path").Value.String()
 		logLevel   = cmd.Flag("log-level").Value.String()
