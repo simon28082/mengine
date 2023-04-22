@@ -1,21 +1,14 @@
 package wrap
 
 import (
-	"github.com/google/wire"
 	"github.com/simon28082/mengine/infrastructure/logger"
-	"github.com/simon28082/mengine/infrastructure/logger/zap"
 )
 
 type LoggerWrap struct {
 	logger logger.Logger
 }
 
-var (
-	WireLoggerZapDevelopmentSet = wire.NewSet(NewLogger, zap.WireZapDevelopmentSet)
-	WireLoggerZapProductionSet  = wire.NewSet(NewLogger, zap.WireZapProductionSet)
-)
-
-func NewLogger(logger logger.Logger) *LoggerWrap {
+func NewLogger(logger logger.Logger) logger.Wrap {
 	return &LoggerWrap{
 		logger: logger,
 	}

@@ -8,19 +8,24 @@ package engine
 
 import (
 	"context"
+	"github.com/simon28082/mengine/infrastructure/logger"
 	"github.com/simon28082/mengine/infrastructure/logger/wrap"
 	"github.com/simon28082/mengine/infrastructure/logger/zap"
 )
 
 // Injectors from wire.go:
 
-func EngineProvide(ctx context.Context) Engine {
+func ProvideEngine(ctx context.Context) Engine {
 	engineEngine := NewEngine(ctx)
 	return engineEngine
 }
 
-func LoggerProvide() *wrap.LoggerWrap {
-	zapZap := zap.NewZapDevelopment()
-	loggerWrap := wrap.NewLogger(zapZap)
-	return loggerWrap
+// wire.go:
+
+func ProvideZapDevLogger() logger.Wrap {
+	return wrap.NewLogger(zap.NewZapDevelopment())
+}
+
+func ProvideZapProdLogger() logger.Wrap {
+	return wrap.NewLogger(zap.NewZapProduction())
 }

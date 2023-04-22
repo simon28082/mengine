@@ -181,7 +181,7 @@ func (e *engine) cobraPersistentPreRunE(cmd *cobra.Command, args []string) error
 	//logger := logger2.NewLogger(zap.NewZapDevelopment())
 
 	e.container.Put(`config`, config)
-	logger := LoggerProvide()
+	logger := ProvideZapProdLogger()
 	e.container.Put(`logger`, logger)
 
 	return processFunc(e.processes, func(process Process) error {
