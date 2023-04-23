@@ -6,7 +6,7 @@ import (
 )
 
 type Container interface {
-	Get(key string) (any, bool)
+	Get(key string) any
 
 	Put(key string, val any)
 
@@ -31,8 +31,12 @@ func NewContainer() *container {
 	return &container{}
 }
 
-func (c *container) Get(key string) (any, bool) {
-	return c.box.Load(key)
+func (c *container) Get(key string) any {
+	v, ok := c.box.Load(key)
+	if ok {
+		return v
+	}
+	return nil
 }
 
 func (c *container) Put(key string, val any) {

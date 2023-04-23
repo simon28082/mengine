@@ -81,7 +81,7 @@ func (e *engine) Context() context.Context {
 	return e.ctx
 }
 
-func (e *engine) Get(key string) (any, bool) {
+func (e *engine) Get(key string) any {
 	return e.container.Get(key)
 }
 
