@@ -6,6 +6,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/google/wire"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"strings"
 )
 
@@ -22,6 +23,11 @@ const (
 
 	version = `v0.0.1-alpha`
 )
+
+func init() {
+	viper.SetEnvPrefix("MENGINE")
+	viper.AutomaticEnv()
+}
 
 type Engine interface {
 	Container
@@ -136,23 +142,35 @@ func (e *engine) cobraBuild() error {
 	logoColor := color.New(color.FgCyan, color.Bold)
 	versionColor := color.New(color.FgRed, color.Bold)
 	cmd := &cobra.Command{
-		Use:               `mengine`,
-		Short:             `Mengine [` + version + `]`,
-		Long:              fmt.Sprintf("%s Mengine [ %s ]", logoColor.Sprint(logo1), versionColor.Sprint(version)),
-		Version:           version,
-		PersistentPreRunE: e.cobraPersistentPreRunE,
-		//RunE: func(cmd *cobra.Command, args []string) error {
-		//	//fmt.Println("root==================")
-		//	return nil
-		//},
+		Use:                `mengine`,
+		Short:              `Mengine [` + version + `]`,
+		Long:               fmt.Sprintf("%s Mengine [ %s ]", logoColor.Sprint(logo1), versionColor.Sprint(version)),
+		Version:            version,
+		PersistentPreRunE:  e.cobraPersistentPreRunE,
 		PersistentPostRunE: e.cobraPersistentPostRunE,
 	}
 
-	cmd.PersistentFlags().String("log-path", "./1.json", "log path")
-	cmd.PersistentFlags().String("log-level", "info", "log level")
+	cmd.PersistentFlags().String("log-level", viper.GetString(`LOG_LEVEL`), "log level")
+	cmd.PersistentFlags().String("log-path", viper.GetString(`LOG_PATH`), "log path")
 	cmd.PersistentFlags().String("config-path", "./1.json", "config level")
 	e.cli = cmd
 	return nil
+}
+
+func (e *engine) defaultEnvToFlags(cmd *cobra.Command) {
+	var (
+		logLevel = viper.GetString(`LOG_LEVEL`)
+		logPath  = viper.GetString(`LOG_PATH`)
+	)
+	if len(logLevel) == 0 {
+		logLevel = `info`
+	}
+	if len(logPath) == 0 {
+		logPath = `stdout`
+	}
+	cmd.PersistentFlags().String("log-level", logLevel, "log level contains ")
+	cmd.PersistentFlags().String("log-path", logPath, "log path")
+	cmd.PersistentFlags().String("config-path", "./1.json", "config level")
 }
 
 func (e *engine) cobraCommandRegister() {
