@@ -14,17 +14,17 @@ const (
 func (l Level) String() string {
 	switch l {
 	case Debug:
-		return `Debug`
+		return `debug`
 	case Info:
-		return `Info`
+		return `info`
 	case Warn:
-		return `Warn`
+		return `warn`
 	case Error:
-		return `Error`
+		return `error`
 	case Panic:
-		return `Panic`
+		return `panic`
 	case Fatal:
-		return `Fatal`
+		return `fatal`
 	default:
 		panic(`not allow level`)
 	}

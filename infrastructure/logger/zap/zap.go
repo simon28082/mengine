@@ -9,6 +9,7 @@ import (
 
 type zap struct {
 	logger *zap2.Logger
+	config *logger.LoggerConfig
 	fields sync.Map
 }
 
@@ -35,6 +36,28 @@ func NewZapProduction() *zap {
 	return &zap{
 		logger: zapLogger,
 	}
+}
+
+func NewZap(config logger.LoggerConfig) *zap {
+	zapLogger, err := zap2.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+	return &zap{
+		config: &config,
+		logger: zapLogger,
+	}
+}
+
+func (z *zap) SetLevel(level logger.Level) {
+	z2 := z.logger.Level()
+	if err := z2.Set(level.String()); err != nil {
+		panic(err)
+	}
+}
+
+func (z *zap) Level() logger.Level {
+	return reverseLevel.level(z.logger.Level())
 }
 
 func (z *zap) Log(level logger.Level, message string, context map[string]any) {

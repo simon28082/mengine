@@ -2,15 +2,22 @@ package wrap
 
 import (
 	"github.com/simon28082/mengine/infrastructure/logger"
+	"sync/atomic"
 )
 
 type LoggerWrap struct {
+	level  *atomic.Int32
+	config *logger.LoggerConfig
 	logger logger.Logger
 }
 
-func NewLogger(logger logger.Logger) logger.Wrap {
+func NewLogger(lc logger.LoggerConfig, l logger.Logger) logger.Wrap {
+	level := &atomic.Int32{}
+	level.Store(int32(lc.Level))
 	return &LoggerWrap{
-		logger: logger,
+		level:  level,
+		config: &lc,
+		logger: l,
 	}
 }
 
@@ -63,16 +70,28 @@ func (l *LoggerWrap) Fatalf(format, message string, v ...interface{}) {
 }
 
 func (l *LoggerWrap) Log(level logger.Level, message string, context map[string]any) {
-	l.logger.Log(level, message, context)
+	if l.level.Load() <= int32(level) {
+		l.logger.Log(level, message, context)
+	}
 }
 
 func (l *LoggerWrap) Logf(level logger.Level, format string, message string, context map[string]any) {
-	l.logger.Logf(level, format, message, context)
+	if l.level.Load() <= int32(level) {
+		l.logger.Logf(level, format, message, context)
+	}
 }
 
 func (l *LoggerWrap) Fields(m map[string]any) logger.Logger {
 	l.logger.Fields(m)
 	return l
+}
+
+func (l *LoggerWrap) SetLevel(level logger.Level) {
+	l.level.Store(int32(level))
+}
+
+func (l *LoggerWrap) Level() logger.Level {
+	return logger.Level(l.level.Load())
 }
 
 func (l *LoggerWrap) String() string {
