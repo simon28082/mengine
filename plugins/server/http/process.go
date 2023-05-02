@@ -6,7 +6,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/google/wire"
 	"github.com/simon28082/mengine/infrastructure/engine"
-	logger2 "github.com/simon28082/mengine/infrastructure/logger/wrap"
+	logger2 "github.com/simon28082/mengine/infrastructure/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +19,7 @@ var WireProcessSet = wire.NewSet(NewProcess)
 
 type process struct {
 	ctx    context.Context
-	logger *logger2.LoggerWrap
+	logger *logger2.WrapLogger
 	engine engine.Engine
 }
 

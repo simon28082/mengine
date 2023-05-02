@@ -13,19 +13,11 @@ type Logger interface {
 
 	Logf(level Level, format string, message string, context map[string]any)
 
-	// Global fields
-	Fields(map[string]any) Logger
-
 	SetLevel(level Level)
 
 	Level() Level
 
 	String() string
-}
-
-type LoggerConfig struct {
-	Level Level
-	Path  string
 }
 
 type Wrap interface {

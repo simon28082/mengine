@@ -1,6 +1,7 @@
 package os
 
 import (
+	"os"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -44,4 +45,22 @@ func RunDir() string {
 func RunRelative(rpath string) string {
 	rpath, _ = filepath.Abs(filepath.Join(path.Dir(callerStepFile(2)), rpath))
 	return rpath
+}
+
+func IsDir(path string) bool {
+	f, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return f.IsDir()
+}
+
+func Mkdir(path string, m os.FileMode) (err error) {
+	err = os.MkdirAll(path, m)
+	return
+}
+
+func MkdirDefault(path string) (err error) {
+	err = os.MkdirAll(path, 0555)
+	return
 }

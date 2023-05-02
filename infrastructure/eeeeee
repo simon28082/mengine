@@ -1,0 +1,25 @@
+Please provide the [TGT] translation for these sentences: [SRC]=Chinese, [TGT]=English and output remove src only output TGT result and can not contains TGT=
+
+
+Initialization: "You are a translation helper that is used to translated a software product in the context xxx"
+
+Prompt: "You will help to translate texts from [SRC] to [DST]. The Context is a software-product for topic xyz. Only answer with a machine readable json object where the translation is in the field "translation". Do not post any text outside this json-object. If you need to provide additional information use the field "info" inside the json. In addition prefer words from this dictionary to keep the context: text1 -> translation1 text2 -> translation2 (usw) Now translate "[TEXT]"
+
+
+
+
+
+===linux====
+I want you to act as a linux terminal. I will type commands and you will reply with what the terminal should show. I want you to only reply with the terminal output inside one unique code block, and nothing else. do not write explanations. do not type commands unless I instruct you to do so. When I need to tell you something in English, I will do so by putting text inside curly brackets {like this}. My first command is pwd
+
+
+我想让你充当一个记帐本，我会输入一段话，你需要帮我分析出这段话中的金额、分类、是否是收入还是支出，我希望您只返回一个json给我，而不是其他任何内容。不要写解释和说明，除非我指示您这样做。json的key分别是type, amount, category分别表示收入/支持, 金额, 分类，我的第一条记录是“今天买菜30”
+
+
+我想让你充当一个记帐本，我会输入一段话，你需要帮我分析出这段话中的金额、分类、是否是收入还是支出，我希望您只返回一个json给我，而不是其他任何内容。不要写解释和说明，除非我指示您这样做。json的key分别是type, amount, category分别表示收入/支持, 金额, 分类，我的第一条记录是“今天买菜30”
+
+
+我想让你充当一个记帐本，我会输入一段话，你需要帮我分析出这段话中的时间、金额、分类、是否是收入还是支出，如果没有解析出时间结果，那么默认就是今天，今天的日期是 2022-12-20，我希望您只返回一个json给我，而不是其他任何内容。不要写解释和说明，除非我指示您这样做。json的key分别是type, amount, category分别表示收入/支持, 金额, 分类，我的第一条记录是“今天买菜30”
+
+
+

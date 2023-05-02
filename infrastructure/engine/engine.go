@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/google/wire"
+	"github.com/simon28082/mengine/infrastructure/logger"
+	"github.com/simon28082/mengine/infrastructure/logger/zap"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"strings"
@@ -64,9 +66,12 @@ var (
 					continue
 				}
 			}
+
 			if err := fn(processes[i]); err != nil {
 				return err
 			}
+
+			logger.Infof(`process:%s loaded`, processes[i].Name())
 		}
 		return nil
 	}
@@ -150,9 +155,7 @@ func (e *engine) cobraBuild() error {
 		PersistentPostRunE: e.cobraPersistentPostRunE,
 	}
 
-	cmd.PersistentFlags().String("log-level", viper.GetString(`LOG_LEVEL`), "log level")
-	cmd.PersistentFlags().String("log-path", viper.GetString(`LOG_PATH`), "log path")
-	cmd.PersistentFlags().String("config-path", "./1.json", "config level")
+	e.defaultEnvToFlags(cmd)
 	e.cli = cmd
 	return nil
 }
@@ -170,7 +173,7 @@ func (e *engine) defaultEnvToFlags(cmd *cobra.Command) {
 	}
 	cmd.PersistentFlags().String("log-level", logLevel, "log level contains ")
 	cmd.PersistentFlags().String("log-path", logPath, "log path")
-	cmd.PersistentFlags().String("config-path", "./1.json", "config level")
+	//cmd.PersistentFlags().String("config-path", "./1.json", "config level")
 }
 
 func (e *engine) cobraCommandRegister() {
@@ -186,21 +189,30 @@ func (e *engine) cobraPersistentPreRunE(cmd *cobra.Command, args []string) error
 	e.container.Put(`cmd`, cmd)
 
 	var (
-		logPath    = cmd.Flag("log-path").Value.String()
-		logLevel   = cmd.Flag("log-level").Value.String()
-		configPath = cmd.Flag(`config-path`).Value.String()
+		logPath  = cmd.Flag("log-path").Value.String()
+		logLevel = cmd.Flag("log-level").Value.String()
+		//configPath = cmd.Flag(`config-path`).Value.String()
 	)
-	fmt.Println("logPath", logPath, "logLevel", logLevel, "configPath", configPath, "cmd.Use", cmd.Use)
+
+	zap.SetZapDefaultLogger(logger.Config{
+		Level:      logger.StringLevel(logLevel),
+		TraceLevel: logger.StringLevel(`warn`),
+		Outputs:    []string{logPath},
+	})
+
+	e.container.Put(`logger`, logger.DefaultLogger)
+
+	//fmt.Println("logPath", logPath, "logLevel", logLevel, "configPath", configPath, "cmd.Use", cmd.Use)
 	//config, err := config.NewConfig(source.NewFile(configPath))
 	//if err != nil {
 	//	return err
 	//}
-	config := configPath
+	//config := configPath
 	//logger := logger2.NewLogger(zap.NewZapDevelopment())
 
-	e.container.Put(`config`, config)
-	logger := ProvideZapProdLogger()
-	e.container.Put(`logger`, logger)
+	//e.container.Put(`config`, config)
+	//logger := ProvideZapProdLogger()
+	//e.container.Put(`logger`, logger)
 
 	return processFunc(e.processes, func(process Process) error {
 		return process.Prepare(e)

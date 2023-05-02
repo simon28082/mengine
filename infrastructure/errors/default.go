@@ -21,4 +21,5 @@ var (
 
 var (
 	ErrTypeInvalid = NewDefault(`invalid type`)
+	ErrEmptyValue  = NewDefault(`value is empty`)
 )

@@ -3,29 +3,48 @@ package logger
 type Level int8
 
 const (
-	Debug Level = 0
-	Info  Level = 1
-	Warn  Level = 2
-	Error Level = 3
-	Panic Level = 4
-	Fatal Level = 5
+	DebugLevel Level = 0
+	InfoLevel  Level = 1
+	WarnLevel  Level = 2
+	ErrorLevel Level = 3
+	PanicLevel Level = 4
+	FatalLevel Level = 5
 )
 
 func (l Level) String() string {
 	switch l {
-	case Debug:
+	case DebugLevel:
 		return `debug`
-	case Info:
+	case InfoLevel:
 		return `info`
-	case Warn:
+	case WarnLevel:
 		return `warn`
-	case Error:
+	case ErrorLevel:
 		return `error`
-	case Panic:
+	case PanicLevel:
 		return `panic`
-	case Fatal:
+	case FatalLevel:
 		return `fatal`
 	default:
 		panic(`not allow level`)
+	}
+}
+
+func StringLevel(l string) Level {
+	switch l {
+	case `debug`, `DEBUG`:
+		return DebugLevel
+	case `info`, `INFO`:
+		return InfoLevel
+	case `warn`, `WARN`, `warning`, `WARNING`:
+		return WarnLevel
+	case `error`, `ERROR`:
+		return ErrorLevel
+	case `panic`, `PANIC`:
+		return PanicLevel
+	case `fatal`, `FATAL`:
+		return FatalLevel
+	default:
+		panic(`not allow level string`)
 	}
 }
