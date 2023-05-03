@@ -34,6 +34,10 @@ func (p *process) Name() string {
 	return `http`
 }
 
+func (m *process) Dependencies() []string {
+	return nil
+}
+
 func (p *process) Cobra() *cobra.Command {
 	cli := &cobra.Command{
 		Use: `http`,

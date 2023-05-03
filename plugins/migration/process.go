@@ -31,6 +31,10 @@ func (m *process) Global() bool {
 	return false
 }
 
+func (m *process) Dependencies() []string {
+	return nil
+}
+
 func (m *process) Prepare(engine engine.Engine) error {
 	return nil
 }

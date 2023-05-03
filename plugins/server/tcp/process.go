@@ -20,6 +20,10 @@ func (p *process) Name() string {
 	return `tcp`
 }
 
+func (m *process) Dependencies() []string {
+	return nil
+}
+
 func (p *process) Cobra() *cobra.Command {
 	cli := &cobra.Command{
 		Use: `tcp`,

@@ -4,7 +4,8 @@ type Process interface {
 	Name() string
 
 	// If is Global all process will reload
-	Global() bool
+	//Global() bool
+	Dependencies() []string
 
 	Prepare(engine Engine) error
 

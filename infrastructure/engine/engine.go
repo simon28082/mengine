@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fatih/color"
 	"github.com/google/wire"
 	"github.com/simon28082/mengine/infrastructure/logger"
@@ -10,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"strings"
+	"sync"
 )
 
 const (
@@ -44,11 +46,13 @@ type Engine interface {
 type processHandleFunc func(process Process) error
 
 type engine struct {
-	ctx       context.Context
-	cancel    context.CancelFunc
-	container Container
-	processes []Process
-	cli       *cobra.Command
+	ctx              context.Context
+	cancel           context.CancelFunc
+	container        Container
+	processes        map[string]Process
+	currentProcesses []Process
+	processLock      sync.Mutex
+	cli              *cobra.Command
 }
 
 var (
@@ -56,16 +60,21 @@ var (
 
 	processFunc = func(processes []Process, fn processHandleFunc, use string) error {
 		for i := range processes {
-			if processes[i].Global() == false {
-				cobra, ok := processes[i].(CobraCommand)
-				if !ok {
-					continue
-				}
-
-				if cobra.Cobra().Use != use {
-					continue
-				}
-			}
+			//cobra, ok := processes[i].(CobraCommand)
+			//if !ok {
+			//	continue
+			//}
+			//
+			//if processes[i].Global() == false {
+			//	cobra, ok := processes[i].(CobraCommand)
+			//	if !ok {
+			//		continue
+			//	}
+			//
+			//	if cobra.Cobra().Use != use {
+			//		continue
+			//	}
+			//}
 
 			if err := fn(processes[i]); err != nil {
 				return err
@@ -85,6 +94,7 @@ func NewEngine(
 		ctx:       ctx,
 		cancel:    cancel,
 		container: NewContainer(),
+		processes: make(map[string]Process),
 	}
 }
 
@@ -116,8 +126,13 @@ func (e *engine) Clean() {
 	e.container.Clean()
 }
 
-func (e *engine) Mount(process ...Process) {
-	e.processes = append(e.processes, process...)
+func (e *engine) Mount(processes ...Process) {
+	e.processLock.Lock()
+	defer e.processLock.Unlock()
+	for i := range processes {
+		process := processes[i]
+		e.processes[process.Name()] = process
+	}
 }
 
 func (e *engine) prepare() error {
@@ -202,6 +217,35 @@ func (e *engine) cobraPersistentPreRunE(cmd *cobra.Command, args []string) error
 
 	e.container.Put(`logger`, logger.DefaultLogger)
 
+	e.processLock.Lock()
+	// get current process
+	var currentProcess Process
+	for i := range e.processes {
+		p1 := e.processes[i]
+		if v, ok := p1.(CobraCommand); ok {
+			if cmd.Use == v.Cobra().Use {
+				currentProcess = e.processes[i]
+				break
+			}
+		}
+	}
+
+	e.currentProcesses = e.deepAllDependence(currentProcess)
+	spew.Dump(e.currentProcesses)
+	e.processLock.Unlock()
+
+	// parse all dependence
+	//var dependence = currentProcess.Dependencies()
+	//if len(dependence) > 0 {
+	//	var allDependencies []Process
+	//	for _, name := range dependence {
+	//		if v, ok := e.processes[name]; ok {
+	//			allDependencies = append(allDependencies, v)
+	//		}
+	//
+	//	}
+	//}
+
 	//fmt.Println("logPath", logPath, "logLevel", logLevel, "configPath", configPath, "cmd.Use", cmd.Use)
 	//config, err := config.NewConfig(source.NewFile(configPath))
 	//if err != nil {
@@ -214,13 +258,29 @@ func (e *engine) cobraPersistentPreRunE(cmd *cobra.Command, args []string) error
 	//logger := ProvideZapProdLogger()
 	//e.container.Put(`logger`, logger)
 
-	return processFunc(e.processes, func(process Process) error {
+	return processFunc(e.currentProcesses, func(process Process) error {
 		return process.Prepare(e)
 	}, cmd.Use)
 }
 
 func (e *engine) cobraPersistentPostRunE(cmd *cobra.Command, args []string) error {
-	return processFunc(e.processes, func(process Process) error {
+	return processFunc(e.currentProcesses, func(process Process) error {
 		return process.Shutdown(e)
 	}, cmd.Use)
+}
+
+func (e *engine) deepAllDependence(firstProcess Process) (allDependencies []Process) {
+	var dependenceName = firstProcess.Dependencies()
+	allDependencies = append(allDependencies, firstProcess)
+	if len(dependenceName) > 0 {
+		for _, name := range dependenceName {
+			if v, ok := e.processes[name]; ok {
+				as := e.deepAllDependence(v)
+				if len(as) > 0 {
+					allDependencies = append(allDependencies, as...)
+				}
+			}
+		}
+	}
+	return
 }
