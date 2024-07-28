@@ -3,7 +3,6 @@ package errors
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
@@ -16,9 +15,6 @@ func TestNewDefault(t *testing.T) {
 }
 
 func TestErrorf(t *testing.T) {
-	abc := fmt.Sprintf(``, "errorfdasfdafdasfdsa")
-	fmt.Println(abc)
-	os.Exit(0)
 	err1 := NewDefault("abc")
 	err2 := Errorf(err1, "format %s", "----")
 	fmt.Println(err2)
