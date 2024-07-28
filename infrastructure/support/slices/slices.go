@@ -29,3 +29,17 @@ func InSlice[T comparable](key T, targets []T) bool {
 	}
 	return false
 }
+
+func Reverse[T any](s []T) []T {
+	oldLen := len(s)
+	if oldLen == 0 {
+		return s
+	}
+
+	var s1 = make([]T, 0, len(s))
+	for i := oldLen - 1; i >= 0; i-- {
+		s1 = append(s1, s[i])
+	}
+
+	return s1
+}

@@ -1,13 +1,23 @@
 package engine
 
-type Process interface {
-	Name() string
+import "github.com/urfave/cli/v3"
 
-	// If is Global all process will reload
-	//Global() bool
-	Dependencies() []string
+type ProcessorName string
 
-	Prepare(engine Engine) error
+type Processor interface {
+	Name() ProcessorName
 
-	Shutdown(engine Engine) error
+	Dependencies() []ProcessorName
+
+	Prepare(cli *cli.Command, e *Engine) (err error)
+
+	Start(cli *cli.Command, e *Engine) (err error)
+
+	Shutdown(cli *cli.Command, e *Engine) (err error)
+}
+
+type UnimplementedDependencies struct{}
+
+func (UnimplementedDependencies) Dependencies() []ProcessorName {
+	return nil
 }

@@ -28,3 +28,11 @@ func TestConvertToMap(t *testing.T) {
 		1:    2,
 	}, r4)
 }
+
+func TestReverse(t *testing.T) {
+	var x1 = []int{1, 2, 3, 4, 5}
+
+	x2 := Reverse[int](x1)
+	spew.Dump(x2)
+	assert.Equal(t, []int{5, 4, 3, 2, 1}, x2)
+}

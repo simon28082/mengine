@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/fsnotify/fsnotify"
-	"github.com/google/wire"
 	"github.com/spf13/viper"
 	"io"
 	"os"
@@ -18,9 +17,7 @@ type file struct {
 
 type PathString string
 
-var WireFileSourceSet = wire.NewSet(NewFile, wire.Value(`abc`))
-
-func NewFile(path string) *file {
+func NewFile(path string) Source {
 	vp := viper.New()
 	vp.SetConfigFile(string(path))
 	vp.OnConfigChange(func(e fsnotify.Event) {

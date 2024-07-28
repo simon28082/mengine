@@ -4,23 +4,19 @@ import (
 	"context"
 	"fmt"
 	"github.com/simon28082/mengine/infrastructure/engine"
-	"github.com/simon28082/mengine/infrastructure/logger"
-	"github.com/simon28082/mengine/plugins/server/http"
-	"os"
+	"github.com/urfave/cli/v3"
+	"log"
 )
 
 func main() {
-	e := engine.ProvideEngine(context.Background())
-
-	e.Mount(http.NewProcess())
-
-	if err := e.Run(os.Args...); err != nil {
-		fmt.Println(err)
-		//os.Exit(1)
-		logger.Error(err.Error())
-	} else {
-		logger.Error("abc")
-
+	eng := engine.NewEngine(
+		engine.WithContext(context.TODO()),
+		engine.WithAction(func(ctx context.Context, command *cli.Command) error {
+			fmt.Println("running")
+			return nil
+		}),
+	)
+	if err := eng.Run(); err != nil {
+		log.Fatal(err)
 	}
-
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/simon28082/mengine/infrastructure/config/source"
 	"github.com/sourcegraph/conc/panics"
 	"github.com/spf13/viper"
+	"log/slog"
 )
 
 type Config interface {
@@ -78,7 +79,9 @@ func (c *config) watch() error {
 			if err != nil {
 				return
 			}
-			c.viper.ReadConfig(bytes.NewBuffer(v))
+			if err1 := c.viper.ReadConfig(bytes.NewBuffer(v)); err1 != nil {
+				slog.Error(`read watch config failed`, `error`, err1)
+			}
 		}
 	})
 

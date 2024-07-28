@@ -140,13 +140,13 @@ func NewDefault(message string) error {
 //	}
 //}
 
-// WithErrorf only support error type and string type
+// Errorf only support error type and string type
 // Examples:
-// WithErrorf(`some %s`, `description`, err1, err2) recommend
-// WithErrorf(err1, err2, `some %s`, `description`)
+// Errorf(`some %s`, `description`, err1, err2) recommend
+// Errorf(err1, err2, `some %s`, `description`)
 // not supported +w
 // use error, please use params transfer
-func WithErrorf(args ...any) error {
+func Errorf(args ...any) error {
 	var (
 		errs   []error
 		others []any
@@ -181,25 +181,25 @@ func WithErrorf(args ...any) error {
 // WithError(err1, err2, `some description`)
 // not supported +w
 // use error, please use params transfer
-func WithError(args ...any) error {
-	var (
-		errs     []error
-		messages []string
-	)
-	if len(args) > 0 {
-		for i := range args {
-			switch v := args[i].(type) {
-			case error:
-				errs = append(errs, v)
-			case string:
-				messages = append(messages, v)
-			default:
-				panic(ErrTypeInvalid)
-			}
-		}
-	}
-	return &basicError{
-		wraps:   errs,
-		message: strings.Join(messages, ` ,`),
-	}
-}
+//func WithError(args ...any) error {
+//	var (
+//		errs     []error
+//		messages []string
+//	)
+//	if len(args) > 0 {
+//		for i := range args {
+//			switch v := args[i].(type) {
+//			case error:
+//				errs = append(errs, v)
+//			case string:
+//				messages = append(messages, v)
+//			default:
+//				panic(ErrTypeInvalid)
+//			}
+//		}
+//	}
+//	return &basicError{
+//		wraps:   errs,
+//		message: strings.Join(messages, ` ,`),
+//	}
+//}
