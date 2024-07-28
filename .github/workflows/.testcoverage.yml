@@ -15,15 +15,15 @@ local-prefix: "github.com/simon28082/mengine"
 threshold:
   # (optional; default 0) 
   # The minimum coverage that each file should have
-  file: 1
+  file: 2
 
   # (optional; default 0) 
   # The minimum coverage that each package should have
-  package: 1
+  package: 2
 
   # (optional; default 0) 
   # The minimum total coverage project should have
-  total: 1
+  total: 2
 
 # Holds regexp rules which will override thresholds for matched files or packages 
 # using their paths.
