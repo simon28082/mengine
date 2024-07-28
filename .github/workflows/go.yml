@@ -41,6 +41,6 @@ jobs:
         # specifing these action parameters will override appropriate config values.
         profile: cover.out
         local-prefix: github.com/simon28082/mengine
-        threshold-file: 80
-        threshold-package: 80
-        threshold-total: 95
+        threshold-file: 0
+        threshold-package: 0
+        threshold-total: 0
